@@ -28,7 +28,7 @@ const Chats: FC<ChatsProps> = ({}) => {
             <ChatHeader />
           </AccordionTrigger>
           <AccordionContent>
-            <div className='flex flex-col h-96 overflow-y-scroll'>
+            <div className='flex flex-col h-96'>
               {/* <ChatMessages className='px-2 py-3 flex-1' /> */}
               <ChatInput className='absolute bottom-4' /> 
             </div>
