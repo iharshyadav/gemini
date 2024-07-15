@@ -10,18 +10,41 @@ import {
   HarmCategory,
   HarmBlockThreshold,
 } from "@google/generative-ai";
+import { chatbotPrompt } from '@/app/helpers/constants/chatbot-prompt';
 
 const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY as string;
 
 interface ChatInputProps extends HTMLAttributes<HTMLDivElement> {}
 
+interface Content {
+  role: string;
+  parts: Part[];
+}
+
+interface Part {
+  user?: string;
+  ai?: string;
+}
+
+
 const ChatInput: FC<ChatInputProps> = ({ className, ...props }) => {
   const [input, setInput] = useState<string>('');
   const [messages, setMessages] = useState<{ user: string, ai: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [chatHistory, setChatHistory] = useState([
+    {
+      role: "user",
+      parts: messages,
+    },
+    {
+      role: "model",
+      parts: messages,
+    },
+  ])
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const generationConfig = {
+    propmt:chatbotPrompt,
     temperature: 1,
     topP: 0.95,
     topK: 64,
@@ -58,16 +81,7 @@ const ChatInput: FC<ChatInputProps> = ({ className, ...props }) => {
     const chatSession = model.startChat({
       generationConfig,
       safetySettings,
-      history: [
-        {
-          role: "user",
-          parts: [{ text: "HELLO" }],
-        },
-        {
-          role: "model",
-          parts: [{ text: "Hello there! How can I assist you today?" }],
-        },
-      ],
+      history: chatHistory,
     });
 
     const result = await model.generateContentStream([prompt]);
